@@ -1,83 +1,25 @@
-import java.util.Scanner;
 import java.util.Random;
 import java.util.Hashtable;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 
-public class TypeTest {
-    static Scanner in = new Scanner(System.in);
+public abstract class TypeTest {
 
-    public static void main(String[] args) {
-        System.out.println("\nWelcome to English 1B Terms Typing Test");
-        System.out.println("Created by Edouard Gotthardt, March 2023,");
-        System.out.println("to help with preparing for the midterm.\n");
-
-        String goAgain = "y";
-        
-        while (goAgain.equals("y")) {
-            countDown();
-
-            String toType = getSentence();
-
-            // Chooses random Term to be typed and prints to screen
-            System.out.println(toType);
-            System.out.println();
-
-            // Starts timer
-            double start = System.currentTimeMillis();
-
-            // User input
-            String userTypes = in.nextLine();
-            System.out.println();
-
-            // Ends timer
-            double end = System.currentTimeMillis();
-
-            // Converts timer to how long it took the user to type in seconds.
-            double timeToType = (end - start) / 1000;
-
-            double wpm = calculateWpm(timeToType, toType.length());
-            int errors = calculateAccuracy(toType, userTypes);
-
-            System.out.printf("You typed %.2f wpm in a time of " + timeToType + " seconds.\nYou made a total of %d mistakes", wpm, errors);
-
-            System.out.print("\n\nWould you like to go again? y/n: ");
-            goAgain = in.nextLine();
-            System.out.println();
-        }
-        
-    }   // End of main()
-
-    public static void countDown() {
+    // This has yet to have any use with my GUI Version of the type test. Yet I am leaving it here incase I
+    // figure out how to make a countdown with swing (if this would even work with that).
+    public static void countDown() throws InterruptedException {
         System.out.println("Ready.");
             // Spaces out the starting words by 1 second.
-            try {
-                for(int i = 0; i < 1; i++) {
-                    Thread.sleep(1000);
-                }
-            }
-            catch (Exception e) {
-                System.out.println("## Error with 'Thread.sleep()' ##");
-            }
+            Thread.sleep(1000);
+
             System.out.println("Set.");
-            try {
-                for(int i = 0; i < 1; i++) {
-                    Thread.sleep(1000);
-                }
-            }
-            catch (Exception e) {
-                System.out.println("## Error with 'Thread.sleep()' ##");
-            }
+            Thread.sleep(1000);
+
             System.out.println("Go!");
-            try {
-                for(int i = 0; i < 1; i++) {
-                    Thread.sleep(250);
-                }
-            }
-            catch (Exception e) {
-                System.out.println("## Error with 'Thread.sleep()' ##");
-            }
+            Thread.sleep(1000);
+
             System.out.println();
     }
 
@@ -99,15 +41,19 @@ public class TypeTest {
 
         for (int i = 0; i < wordCount; i++) {
             // i will dictate the word being analyzed
-            if((userSentence[i] != initialSentence[i]) && (userSentence[i].length() == initialSentence[i].length())) {
+            if((initialSentence[i] != userSentence[i]) && (initialSentence[i].length() == userSentence[i].length())) {
                 // x will be the letters in each word as i is the word itself
                 for (int x = 0; x < initialSentence[i].length(); x++) {
                     if (initialSentence[i].charAt(x) != userSentence[i].charAt(x)) {
                         totalErrors++;
-                    }
-                    if ((initialSentence[i].charAt(x) != userSentence[i].charAt(x)) && (userSentence[i] != mistypedWords[mistypeLoc])) {
-                        mistypedWords[mistypeLoc] = userSentence[i];
-                        mistypeLoc ++;
+                        if ((mistypeLoc == 0) && (userSentence[i] != mistypedWords[mistypeLoc])) {
+                            mistypedWords[mistypeLoc] = userSentence[i];
+                            mistypeLoc++;
+                        }
+                        if ((mistypeLoc > 0) && (userSentence[i] != mistypedWords[mistypeLoc - 1])) {
+                            mistypedWords[mistypeLoc] = userSentence[i];
+                            mistypeLoc++;rintln("Mistype loc 2"); // FOR DEBUGGING
+                        }
                     }
                 }
             }
@@ -119,32 +65,36 @@ public class TypeTest {
                     for (int x = 0; x < initialSentence[i].length(); x++) {
                         if (initialSentence[i].charAt(x) != userSentence[i].charAt(x)) {
                             totalErrors++;
-                        }
-
-                        // PROBLEM CHILD Constatly adds mistyped words for number of letters left in word once mistyped letter is found
-                        // pull this statement out of the for loop, somehow grasp 'x' when outside of for loop. or put in ANOTHER conditional
-                        // to check that there is no instance of the mistyped word anywhere in mystpedWords already.
-                        // How many if/else if statements are too man? this seems excessive, as if i want to write a function for a function.
-                        if ((initialSentence[i].charAt(x) != userSentence[i].charAt(x)) && (userSentence[i] != mistypedWords[mistypeLoc])) {
-                            mistypedWords[mistypeLoc] = userSentence[i];
-                            mistypeLoc ++;
+                            if ((mistypeLoc == 0) && (userSentence[i] != mistypedWords[mistypeLoc])) {
+                                mistypedWords[mistypeLoc] = userSentence[i];
+                                mistypeLoc++;
+                            }
+                            if ((mistypeLoc > 0) && (userSentence[i] != mistypedWords[mistypeLoc - 1])) {
+                                mistypedWords[mistypeLoc] = userSentence[i];
+                                mistypeLoc++;
+                            }
                         }
                     }
-                    totalErrors += userSentence[i].length() - initialSentence[i].length();
                 }
                 // This will run if the user word is smaller
                 else if (userSentence[i].length() < initialSentence[i].length()) {
                     for (int x = 0; x < userSentence[i].length(); x++) {
                         if (initialSentence[i].charAt(x) != userSentence[i].charAt(x)) {
                             totalErrors++;
-                        }
-                        if ((initialSentence[i].charAt(x) != userSentence[i].charAt(x)) && (userSentence[i] != mistypedWords[mistypeLoc])) {
-                            mistypedWords[mistypeLoc] = userSentence[i];
-                            mistypeLoc++;
+                            if ((mistypeLoc == 0) && (userSentence[i] != mistypedWords[mistypeLoc])) {
+                                mistypedWords[mistypeLoc] = userSentence[i];
+                                mistypeLoc++;
+                            }
+                            if ((mistypeLoc > 0) && (userSentence[i] != mistypedWords[mistypeLoc - 1])) {
+                                mistypedWords[mistypeLoc] = userSentence[i];
+                                mistypeLoc++;
+                            }
                         }
                     }
-                    totalErrors += initialSentence[i].length() - userSentence[i].length();
                 }
+            }
+            else {
+                break;
             }
         }
         System.out.println("The words you typed incorrectly are: ");
@@ -156,6 +106,8 @@ public class TypeTest {
                 break;
             }
         }
+        // System.out.println("\n" + Arrays.toString(initialSentence)); // FOR DEBUGGING
+        // System.out.println("\n" + Arrays.toString(userSentence)); // FOR DEBUGGING 
         return totalErrors;
     }   // End of calculateAccuracy()
 

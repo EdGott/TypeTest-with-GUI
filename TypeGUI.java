@@ -8,6 +8,8 @@ public class TypeGUI {
     private static JLabel sentence, wpm, word, errors, starter;
     private JButton startButton;
     private long timerStart = 0, timerEnd = 0;
+    protected double timeToType = 0;
+    String toType = "";
 
     public TypeGUI() {
         int frameW = 550, frameH = 300;
@@ -55,14 +57,15 @@ public class TypeGUI {
         wpm.setBounds(((frameW / 2) + (textFieldW / 8)), frameH - 85, 110, 30);
         //  errors position
         errors.setBounds(((frameW / 3) + (textFieldW / 2)), frameH - 85, 110, 30);
-
+        
         // Start Button (begin test)
         startButton.addActionListener(new ActionListener () {
-            public void actionPerformed(ActionEvent evnt) {
+            public void actionPerformed(ActionEvent pressStart) {
                 starter.setText("");
                 timerStart = System.currentTimeMillis();
                 System.out.println(timerStart);
-                sentence.setText("<html>" + TypeTest.getSentence() + "</html>");
+                toType = TypeTest.getSentence();
+                sentence.setText("<html>" + toType + "</html>");
                 textField.setText("");
                 textField.requestFocus();
 
@@ -72,44 +75,24 @@ public class TypeGUI {
                 word.setBounds(((frameW / 2) - (wordW / 2)), 15, wordW, 35);
             }
         });
-
         
         //  Returns what the user types once they hit enter
         textField.addActionListener(new ActionListener () {
-            public void actionPerformed(ActionEvent evnt) {
+            public void actionPerformed(ActionEvent pressEnter) {
                 String textInput = textField.getText();
                 timerEnd = System.currentTimeMillis();
                 System.out.println(timerEnd);
                 System.out.println(textInput);
-                System.out.println(timerEnd - timerStart);
-                wpm(timerStart, timerEnd, sentence.getText());
-                errors.setText("Errors: " + TypeTest.calculateAccuracy(sentence.getText(), textInput));
+                timeToType = (timerEnd - timerStart) / 1000;
+                System.out.println(timeToType);
+                wpm.setText(String.format("WPM: %.2f", TypeTest.calculateWpm(timeToType, toType.length())));
+                errors.setText("Errors: " + TypeTest.calculateAccuracy(toType, textInput));
             }
         });
     }
 
     public static void setWord(String randomKey) {
         word.setText(randomKey);
-    }
-
-    public void wpm(double timerStart, double timerEnd, String text) {  //// ALSO PROBLEMATIC
-        double timeToType = (timerEnd - timerStart) / 1000;
-        double lengthOfString = text.length();
-        double calculatedWPM =  (lengthOfString / 5) / (timeToType / 60);
-        System.out.println(calculatedWPM);
-        wpm.setText(String.format("WPM: %.2f", calculatedWPM));
-
-    }
-
-    public void delay() {
-        try {
-            for(int i = 0; i < 1; i++) {
-                Thread.sleep(1000);
-            }
-        }
-        catch (Exception e) {
-            System.out.println("## Error with 'Thread.sleep()' ##");
-        }
     }
         
     public static void main(String[] args) { 

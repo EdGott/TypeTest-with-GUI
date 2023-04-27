@@ -52,7 +52,7 @@ public abstract class TypeTest {
                         }
                         if ((mistypeLoc > 0) && (userSentence[i] != mistypedWords[mistypeLoc - 1])) {
                             mistypedWords[mistypeLoc] = userSentence[i];
-                            mistypeLoc++;rintln("Mistype loc 2"); // FOR DEBUGGING
+                            mistypeLoc++;
                         }
                     }
                 }
